@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>接客ログBot</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 接客ログBot</h1>
+        
+        <!-- 接客開始フォーム -->
+        <div class="section">
+            <h2>📝 新規接客開始</h2>
+            <form id="serviceForm">
+                <div class="form-group">
+                    <label for="customerCount">人数:</label>
+                    <select id="customerCount" required>
+                        <option value="">選択してください</option>
+                        <option value="1">1名</option>
+                        <option value="2">2名</option>
+                        <option value="3">3名</option>
+                        <option value="4">4名</option>
+                        <option value="5">5名以上</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="tableNumber">卓:</label>
+                    <input type="text" id="tableNumber" placeholder="例: A1, VIP, 5番" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="service">サービス:</label>
+                    <select id="service" required>
+                        <option value="">選択してください</option>
+                        <option value="飲み放題">飲み放題</option>
+                        <option value="セット">セット</option>
+                        <option value="延長">延長</option>
+                        <option value="ハーフ">ハーフ</option>
+                        <option value="その他">その他</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="estimatedAmount">予想金額 (円):</label>
+                    <input type="number" id="estimatedAmount" required min="0" step="100">
+                </div>
+                
+                <div class="form-group">
+                    <label for="duration">予定時間 (分):</label>
+                    <select id="duration" required>
+                        <option value="">選択してください</option>
+                        <option value="30">30分</option>
+                        <option value="60">60分</option>
+                        <option value="90">90分</option>
+                        <option value="120">120分</option>
+                        <option value="150">150分</option>
+                        <option value="180">180分</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="remarks">備考:</label>
+                    <input type="text" id="remarks" placeholder="特記事項やメモ">
+                </div>
+                
+                <button type="submit" class="btn btn-primary">接客開始</button>
+            </form>
+        </div>
+
+        <!-- Discord設定フォーム -->
+        <div class="section">
+            <h2>⚙️ Discord設定</h2>
+            <form id="discordConfigForm">
+                <div class="form-group">
+                    <label for="discordWebhook">Webhook URL:</label>
+                    <input type="url" id="discordWebhook" placeholder="https://discord.com/api/webhooks/..." required>
+                </div>
+                <div class="form-group">
+                    <label for="discordChannelId">チャンネルID:</label>
+                    <input type="text" id="discordChannelId" placeholder="例: 123456789012345678" required>
+                </div>
+                <div class="form-group">
+                    <label for="discordBotToken">Botトークン:</label>
+                    <input type="password" id="discordBotToken" placeholder="Botのトークン" required>
+                </div>
+                <button type="submit" class="btn btn-secondary">設定保存</button>
+            </form>
+        </div>
+        
+        <!-- アクティブな接客一覧 -->
+        <div class="section">
+            <h2>🔄 現在の接客状況</h2>
+            <div id="activeServices"></div>
+        </div>
+        
+        <!-- リマインダー表示エリア -->
+        <div id="reminderArea" class="reminder-area" style="display: none;">
+            <div class="reminder-content">
+                <h3>⏰ リマインダー</h3>
+                <div id="reminderMessage"></div>
+                <div class="reminder-buttons">
+                    <button id="extendBtn" class="btn btn-extend">延長</button>
+                    <button id="halfBtn" class="btn btn-half">ハーフ</button>
+                    <button id="endBtn" class="btn btn-end">終了</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 店況・掲示板 -->
+        <div class="section">
+            <h2>📋 店況・掲示板</h2>
+            <div id="boardMessages"></div>
+        </div>
+    </div>
+    
+    <!-- 終了モーダル -->
+    <div id="endModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>接客終了</h3>
+            <div class="form-group">
+                <label for="actualAmount">実際の金額 (円):</label>
+                <input type="number" id="actualAmount" min="0" step="100">
+            </div>
+            <div class="modal-buttons">
+                <button id="confirmEndBtn" class="btn btn-primary">終了確定</button>
+                <button id="cancelEndBtn" class="btn btn-secondary">キャンセル</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 延長モーダル -->
+    <div id="extendModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>接客延長</h3>
+            <div class="form-group">
+                <label for="extensionTime">延長時間:</label>
+                <select id="extensionTime">
+                    <option value="30">30分</option>
+                    <option value="60">60分</option>
+                    <option value="90">90分</option>
+                    <option value="120">120分</option>
+                </select>
+            </div>
+            <div class="modal-buttons">
+                <button id="confirmExtendBtn" class="btn btn-primary">延長確定</button>
+                <button id="cancelExtendBtn" class="btn btn-secondary">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

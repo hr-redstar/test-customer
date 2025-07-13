@@ -1,0 +1,44 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: service-log-bot
+  annotations:
+    run.googleapis.com/ingress: all
+    run.googleapis.com/cpu-throttling: "false"
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: "10"
+        autoscaling.knative.dev/minScale: "1"
+        run.googleapis.com/memory: "512Mi"
+        run.googleapis.com/cpu: "1000m"
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      containers:
+      - image: gcr.io/PROJECT_ID/service-log-bot
+        ports:
+        - name: http1
+          containerPort: 8080
+        env:
+        - name: PORT
+          value: "8080"
+        - name: NODE_ENV
+          value: "production"
+        # 以下の環境変数は実際のデプロイ時に設定
+        # - name: DISCORD_TOKEN
+        #   value: "your_token_here"
+        # - name: DISCORD_GUILD_ID
+        #   value: "your_guild_id"
+        # - name: DISCORD_CHANNEL_ID
+        #   value: "your_channel_id"
+        # - name: CLIENT_ID
+        #   value: "your_client_id"
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
