@@ -1,7 +1,6 @@
 # 接客ログBot (Discord + Google Cloud Platform対応)
 
-Discord BotとWebアプリケーションの両方で動作する接客ログ管理システムです。
-Google Cloud Platformでの運用に対応しています。
+Discord BotとWebアプリケーションの両方で動作する接客ログ管理システムです。Google Cloud Platformでの運用に対応しています。
 
 ## 機能
 
